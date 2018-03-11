@@ -50,20 +50,18 @@ namespace ClassLibrary1
                     // do an async wait until we can schedule again
                     await throttler.WaitAsync();
 
-                    // using Task.Run(...) to run the lambda in its own parallel
-                    // flow on the threadpool
-                    allTasks.Add(
-                        Task.Run(async () =>
+                    Func<Task<TResult>> func = async () =>
+                    {
+                        try
                         {
-                            try
-                            {
-                                return await task(element);
-                            }
-                            finally
-                            {
-                                throttler.Release();
-                            }
-                        }));
+                            return await task(element);
+                        }
+                        finally
+                        {
+                            throttler.Release();
+                        }
+                    };
+                    allTasks.Add(func.Invoke());
                 }
 
                 // won't get here until all urls have been put into tasks
