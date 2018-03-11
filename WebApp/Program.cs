@@ -20,6 +20,7 @@ namespace WebApplication2
 
         public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
+                .UseApplicationInsights()
                 .UseStartup<Startup>()
                 .Build();
     }
